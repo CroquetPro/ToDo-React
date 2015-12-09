@@ -22,45 +22,62 @@ var TodoStore = {
   },
 
   all: function(){
-    return _todos;
+    return _todos.slice();
   },
 
   fetch: function(){
     $.get('api/todos', {}, function(todos){
       _todos = todos;
+      TodoStore.changed();
     });
   },
 
-  create: function(todo){
-    $.post('api/todos', {todo: todo}, function(toCreate){
+  create: function(data){
+    $.post('api/todos', {todo: data}, function(toCreate){
       _todos.push(toCreate);
       TodoStore.changed();
     });
   },
 
   destroy: function(id){
-    var toDestroy = _todos.find(function(todo) {
-      todo.id === id;
-    });
+    var callback = function(todo1){
+      var toDestroy = _todos.find(function(todo2) {
+        return todo1 === todo2;
+      });
 
-    if(!toDestroy){ return;}
+      if(typeof toDestroy === 'undefined'){
+        TodoStore.changed();
+        return;
+      }
 
-    $.delete('api/todos/' + id, {}, function(todo){
-      _todos.splice(_todos.indexOf(todo), 1);
+      _todos.splice(_todos.indexOf(toDestroy), 1);
       TodoStore.changed();
+    };
+
+    $.ajax({
+      url: 'api/todos/' + id,
+      type: 'DELETE',
+      success: callback
     });
   },
 
   toggleDone: function(id){
     var toUpdate = _todos.find(function(todo) {
-      todo.id === id;
+      return todo.id === id;
     });
 
-    var newStatus = (toUpdate.done) ? false : true;
+    var newStatus = !toUpdate.done;
 
-    $.patch('api/todos/' + id, {todo: {done: newStatus}}, function(todo){
+    var callback = function(todo){
       toUpdate.done = newStatus;
       TodoStore.changed();
+    };
+
+    $.ajax({
+      url: 'api/todos/' + id,
+      type: 'PATCH',
+      data: {todo: {done: newStatus}},
+      success: callback,
     });
   }
 };

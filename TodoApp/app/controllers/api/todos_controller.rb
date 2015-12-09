@@ -10,7 +10,7 @@ class Api::TodosController < ApplicationController
   def create
     todo = Todo.new(todo_params)
 
-    todo.create!
+    todo.save!
 
     render json: todo
   end
