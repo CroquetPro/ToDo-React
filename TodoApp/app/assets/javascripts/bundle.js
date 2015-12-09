@@ -59,9 +59,7 @@
 	
 	var TodoStore = {
 	  changed: function () {
-	    console.log("in changed");
 	    _callbacks.forEach(function (callback) {
-	      console.log(callback);
 	      callback();
 	    });
 	  },
@@ -98,21 +96,18 @@
 	  },
 	
 	  destroy: function (id) {
-	    var callback = function (todo1) {
-	      console.log("in callback");
-	      var toDestroy = _todos.find(function (todo2) {
-	        return todo1.id === todo2.id;
+	    var callback = function (deletedTodoItem) {
+	      var oldTodo = _todos.find(function (items) {
+	        return deletedTodoItem.id === items.id;
 	      });
-	      if (typeof toDestroy === 'undefined') {
+	      if (typeof oldTodo === 'undefined') {
 	        TodoStore.changed();
 	        return;
 	      }
 	
-	      _todos.splice(_todos.indexOf(toDestroy), 1);
+	      _todos.splice(_todos.indexOf(oldTodo), 1);
 	      TodoStore.changed();
 	    };
-	
-	    console.log("in destroy");
 	
 	    $.ajax({
 	      url: 'api/todos/' + id,
@@ -19783,14 +19778,21 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(3),
-	    TodoStore = __webpack_require__(1);
+	    TodoStore = __webpack_require__(1),
+	    DoneButton = __webpack_require__(163),
+	    TodoDetailView = __webpack_require__(164);
 	
 	var TodoListItem = React.createClass({
 	  displayName: 'TodoListItem',
 	
-	  handleDestroy: function (event) {
-	    // debugger
-	    TodoStore.destroy(this.props.item.id);
+	  getInitialState: function () {
+	    return { shown: "hidden" };
+	  },
+	
+	  handleClick: function (event) {
+	    var clicked = this.state.shown === "hidden" ? "shown" : "hidden";
+	    console.log(clicked);
+	    this.setState({ shown: clicked });
 	  },
 	
 	  render: function () {
@@ -19799,19 +19801,11 @@
 	      null,
 	      React.createElement(
 	        'div',
-	        { className: 'title' },
+	        { onClick: this.handleClick, className: 'title' },
 	        this.props.item.title
 	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'body' },
-	        this.props.item.body
-	      ),
-	      React.createElement(
-	        'button',
-	        { onClick: this.handleDestroy },
-	        'Delete'
-	      )
+	      React.createElement(DoneButton, { item: this.props.item }),
+	      React.createElement(TodoDetailView, { display: this.state.shown, item: this.props.item })
 	    );
 	  }
 	});
@@ -19877,6 +19871,69 @@
 	});
 	
 	module.exports = TodoForm;
+
+/***/ },
+/* 163 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(3),
+	    TodoStore = __webpack_require__(1);
+	
+	var DoneButton = React.createClass({
+	  displayName: 'DoneButton',
+	
+	  handleDone: function (event) {
+	    TodoStore.toggleDone(this.props.item.id);
+	  },
+	
+	  render: function () {
+	    var status = this.props.item.done ? 'Undo' : 'Done';
+	    return React.createElement(
+	      'button',
+	      { onClick: this.handleDone },
+	      status
+	    );
+	  }
+	});
+	
+	module.exports = DoneButton;
+
+/***/ },
+/* 164 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(3),
+	    TodoStore = __webpack_require__(1);
+	
+	var TodoDetailView = React.createClass({
+	  displayName: 'TodoDetailView',
+	
+	  handleDestroy: function (event) {
+	    TodoStore.destroy(this.props.item.id);
+	  },
+	
+	  render: function () {
+	    var toggle = this.props.display;
+	    return React.createElement(
+	      'div',
+	      { className: toggle },
+	      React.createElement(
+	        'div',
+	        { className: 'body' },
+	        this.props.item.body
+	      ),
+	      React.createElement(
+	        'button',
+	        { className: this.props.display,
+	          onClick: this.handleDestroy },
+	        'Delete'
+	      )
+	    );
+	  }
+	
+	});
+	
+	module.exports = TodoDetailView;
 
 /***/ }
 /******/ ]);

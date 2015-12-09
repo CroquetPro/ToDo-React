@@ -3,9 +3,7 @@ var _callbacks = [];
 
 var TodoStore = {
   changed: function() {
-    console.log("in changed");
     _callbacks.forEach(function(callback) {
-      console.log(callback);
       callback();
     });
   },
@@ -42,21 +40,18 @@ var TodoStore = {
   },
 
   destroy: function(id){
-    var callback = function(todo1){
-      console.log("in callback");
-      var toDestroy = _todos.find(function(todo2) {
-        return todo1.id === todo2.id;
+    var callback = function(deletedTodoItem){
+      var oldTodo = _todos.find(function(items) {
+        return deletedTodoItem.id === items.id;
       });
-      if(typeof toDestroy === 'undefined'){
+      if(typeof oldTodo === 'undefined'){
         TodoStore.changed();
         return;
       }
 
-      _todos.splice(_todos.indexOf(toDestroy), 1);
+      _todos.splice(_todos.indexOf(oldTodo), 1);
       TodoStore.changed();
     };
-
-    console.log("in destroy");
 
     $.ajax({
       url: 'api/todos/' + id,
