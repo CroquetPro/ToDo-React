@@ -22,7 +22,6 @@ var TodoList = React.createClass({
   },
 
   render: function() {
-    console.log(this.state.list);
     var list = this.state.list.map(function(item){
       return <TodoListItem key={item.id} item={item}/>;
     });

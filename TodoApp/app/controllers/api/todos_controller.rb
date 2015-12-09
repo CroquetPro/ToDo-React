@@ -19,7 +19,7 @@ class Api::TodosController < ApplicationController
     todo = Todo.find(params[:id])
     todo.destroy!
 
-    render json: Todo.all
+    render json: todo
   end
 
   def update

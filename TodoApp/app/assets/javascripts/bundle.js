@@ -59,7 +59,9 @@
 	
 	var TodoStore = {
 	  changed: function () {
+	    console.log("in changed");
 	    _callbacks.forEach(function (callback) {
+	      console.log(callback);
 	      callback();
 	    });
 	  },
@@ -97,10 +99,10 @@
 	
 	  destroy: function (id) {
 	    var callback = function (todo1) {
+	      console.log("in callback");
 	      var toDestroy = _todos.find(function (todo2) {
-	        return todo1 === todo2;
+	        return todo1.id === todo2.id;
 	      });
-	
 	      if (typeof toDestroy === 'undefined') {
 	        TodoStore.changed();
 	        return;
@@ -109,6 +111,8 @@
 	      _todos.splice(_todos.indexOf(toDestroy), 1);
 	      TodoStore.changed();
 	    };
+	
+	    console.log("in destroy");
 	
 	    $.ajax({
 	      url: 'api/todos/' + id,
@@ -170,7 +174,6 @@
 	  },
 	
 	  render: function () {
-	    console.log(this.state.list);
 	    var list = this.state.list.map(function (item) {
 	      return React.createElement(TodoListItem, { key: item.id, item: item });
 	    });
@@ -19779,24 +19782,35 @@
 /* 161 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(3);
+	var React = __webpack_require__(3),
+	    TodoStore = __webpack_require__(1);
 	
 	var TodoListItem = React.createClass({
-	  displayName: "TodoListItem",
+	  displayName: 'TodoListItem',
+	
+	  handleDestroy: function (event) {
+	    // debugger
+	    TodoStore.destroy(this.props.item.id);
+	  },
 	
 	  render: function () {
 	    return React.createElement(
-	      "div",
+	      'div',
 	      null,
 	      React.createElement(
-	        "div",
-	        { className: "title" },
+	        'div',
+	        { className: 'title' },
 	        this.props.item.title
 	      ),
 	      React.createElement(
-	        "div",
-	        { className: "body" },
+	        'div',
+	        { className: 'body' },
 	        this.props.item.body
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.handleDestroy },
+	        'Delete'
 	      )
 	    );
 	  }

@@ -3,7 +3,9 @@ var _callbacks = [];
 
 var TodoStore = {
   changed: function() {
+    console.log("in changed");
     _callbacks.forEach(function(callback) {
+      console.log(callback);
       callback();
     });
   },
@@ -41,10 +43,10 @@ var TodoStore = {
 
   destroy: function(id){
     var callback = function(todo1){
+      console.log("in callback");
       var toDestroy = _todos.find(function(todo2) {
-        return todo1 === todo2;
+        return todo1.id === todo2.id;
       });
-
       if(typeof toDestroy === 'undefined'){
         TodoStore.changed();
         return;
@@ -53,6 +55,8 @@ var TodoStore = {
       _todos.splice(_todos.indexOf(toDestroy), 1);
       TodoStore.changed();
     };
+
+    console.log("in destroy");
 
     $.ajax({
       url: 'api/todos/' + id,
