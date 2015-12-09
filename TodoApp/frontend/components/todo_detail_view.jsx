@@ -8,10 +8,11 @@ var TodoDetailView = React.createClass({
 
   render: function() {
     var toggle = this.props.display;
+    var deleteButton = "delete " + this.props.display;
     return (
       <div className={toggle}>
         <div className="body" >{this.props.item.body}</div>
-        <button className={this.props.display}
+        <button className={deleteButton}
                 onClick={this.handleDestroy}>Delete</button>
       </div>
     );

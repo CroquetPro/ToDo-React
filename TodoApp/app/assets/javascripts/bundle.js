@@ -19798,7 +19798,7 @@
 	  render: function () {
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'item' },
 	      React.createElement(
 	        'div',
 	        { onClick: this.handleClick, className: 'title' },
@@ -19914,6 +19914,7 @@
 	
 	  render: function () {
 	    var toggle = this.props.display;
+	    var deleteButton = "delete " + this.props.display;
 	    return React.createElement(
 	      'div',
 	      { className: toggle },
@@ -19924,7 +19925,7 @@
 	      ),
 	      React.createElement(
 	        'button',
-	        { className: this.props.display,
+	        { className: deleteButton,
 	          onClick: this.handleDestroy },
 	        'Delete'
 	      )

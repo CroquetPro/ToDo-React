@@ -16,7 +16,7 @@ var TodoListItem = React.createClass({
 
   render: function(){
     return(
-      <div>
+      <div className="item">
         <div onClick={this.handleClick} className="title">{this.props.item.title}</div>
         <DoneButton item={this.props.item}/>
         <TodoDetailView display={this.state.shown} item={this.props.item}/>
